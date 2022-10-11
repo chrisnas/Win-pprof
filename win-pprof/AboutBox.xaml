@@ -1,0 +1,30 @@
+﻿<Window x:Class="win_pprof.AboutBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About pprof Viewer"
+        ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Height="185" Width="394"
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="16"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="128"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0" Width ="64" VerticalAlignment="Center" Source="Cat.png"/>
+            <StackPanel Grid.Column="1" >
+                <TextBlock Text="by Christophe Nasarre" HorizontalAlignment="Center" Margin="0,4,0,10"/>
+                <TextBlock Text="The tool shows the content of .pprof files." TextAlignment="Center" />
+                <TextBlock Text="- Samples: values, labels and callstacks" TextAlignment="Left" Width="240"  Margin="0,10,0,0"/>
+                <TextBlock Text="- Mappings: frames libraries" TextAlignment="Left" Width="240" />
+                <TextBlock Text="- Locations: functions address (inlined or not) " TextAlignment="Left" Width="240" />
+                <TextBlock Text="- Functions: functions name" TextAlignment="Left" Width="240" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Background="#632CA6"/>
+    </Grid>
+</Window>

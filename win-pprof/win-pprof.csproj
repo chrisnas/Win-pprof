@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>win_pprof</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <Version>1.5.0</Version>
+    <Description>.pprof visualizer</Description>
+    <ApplicationIcon>Cat.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Pprof.cs" Link="Pprof.cs" />
+    <Compile Include="..\PProfFile.cs" Link="PProfFile.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Cat.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Cat.png" />
+  </ItemGroup>
+
+</Project>

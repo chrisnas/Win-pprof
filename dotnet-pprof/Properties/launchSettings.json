@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "dotnet-pprof": {
+      "commandName": "Project"
+    }
+  }
+}
