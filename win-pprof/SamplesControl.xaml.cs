@@ -170,12 +170,15 @@ namespace win_pprof
             }
             // TODO: set the unit as tooltip because header could become too large with it
 
-            // fill up the list with ALL samples and compute the value sum for each colum
+            // fill up the list with ALL samples and compute the value sum for each column
+            // also count unique call stacks
+            Dictionary<int, int> uniqueStacks = new Dictionary<int, int>();
             List<long> valuesSum = new List<long>(valuesCount);
             for (int i = 0; i < valuesCount; i++)
             {
                 valuesSum.Add(0);
             }
+
             var sampleIndex = 0;
             foreach (var sample in profile.Samples)
             {
@@ -186,10 +189,18 @@ namespace win_pprof
                     valuesSum[i] += sample.Values[i];
                 }
 
+                var stackKey = sample.Locations.GetHashCodes();
+                int count = 0;
+                uniqueStacks.TryGetValue(stackKey, out count);
+                uniqueStacks[stackKey] = count + 1;
+
                 sampleIndex++;
             }
 
-            // shoz the sum all values per column in the header tooltip
+            // show the number of unique call stacks
+            tbStacksCount.Text = $"({uniqueStacks.Count})";
+
+            // show the sum all values per column in the header tooltip
             for (int i = 0; i < valuesCount; i++)
             {
                 var header = (GridViewColumnHeader)((GridViewColumn)gridView.Columns[i]).Header;
@@ -316,6 +327,24 @@ namespace win_pprof
         private void OnFilterFrameTextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilters();
+        }
+    }
+
+    // from https://stackoverflow.com/questions/8094867/good-gethashcode-override-for-list-of-foo-objects-respecting-the-order/
+    internal static class Extensions
+    {
+        internal static int GetHashCodes<T>(this IEnumerable<T> sequence)
+        {
+            unchecked
+            {
+                int hash = 19;
+                foreach (T item in sequence)
+                {
+                    hash = hash * 31 + (item != null ? item.GetHashCode() : 1);
+                }
+
+                return hash;
+            }
         }
     }
 }
