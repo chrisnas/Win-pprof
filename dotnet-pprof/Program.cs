@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Perftools.Profiles;
 
 namespace dd_pprof
@@ -128,7 +129,8 @@ namespace dd_pprof
             {
                 using var s = File.OpenRead(parameters.filename);
                 var profile = Profile.Parser.ParseFrom(s);
-                DumpPProfEx(profile, parameters.showAll);
+                //DumpPProfEx(profile, parameters.showAll);
+                DumpPProf(profile, parameters.showAll);
             }
             catch (Exception x)
             {
@@ -174,6 +176,38 @@ namespace dd_pprof
                     Console.Write($"{val,12} ");
                 }
                 Console.WriteLine();
+
+                // show breakdown if any
+                var breakdownCount = sample.Breakdown.Count;
+                if (breakdownCount > 0)
+                {
+                    if (breakdownCount == valueCount)
+                    {
+                        for (int i = 0; i < valueCount; i++)
+                        {
+                            var breakdown = sample.Breakdown[i];
+                            Console.WriteLine($"                {wrapper.GetValueName(i)}");
+
+                            var tickCount = breakdown.Ticks.Count;
+                            var breakdownValuesCount = breakdown.Value.Count;
+                            if (tickCount == breakdownValuesCount)
+                            {
+                                for (int j = 0; j < breakdown.Ticks.Count; j++)
+                                {
+                                    Console.WriteLine($"   {breakdown.Ticks[j], 12} | {breakdown.Value[j]}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"   breakdown tick count ({tickCount}) != value count ({breakdownValuesCount})");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"   breakdown count ({breakdownCount}) != value count ({valueCount})");
+                    }
+                }
 
                 // show labels
                 var pos = 0;
