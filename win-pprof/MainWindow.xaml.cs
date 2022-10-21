@@ -16,7 +16,7 @@ namespace win_pprof
     {
         private const string AppTitle = ".pprof Viewer";
         private PProfFile _profile;
-
+        private string _filename;
 
         public MainWindow()
         {
@@ -124,10 +124,23 @@ namespace win_pprof
             return IntPtr.Zero;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private void UpdateTitle()
         {
             var name = System.Reflection.Assembly.GetExecutingAssembly().GetName();
-            Title = string.Format("{0} - v{1}.{2}", AppTitle, name.Version.Major, name.Version.Minor);
+            var titleBuilder = new StringBuilder();
+            titleBuilder.AppendFormat("{0} (v{1}.{2}.{3})", AppTitle, name.Version.Major, name.Version.Minor, name.Version.Build);
+
+            if (!string.IsNullOrEmpty(_filename))
+            {
+                titleBuilder.AppendFormat("  -  {0}", _filename);
+            }
+
+            Title = titleBuilder.ToString();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            UpdateTitle();
 
             // add "About" item in the System menu
             CreateAboutSystemMenuItem();
@@ -175,7 +188,8 @@ namespace win_pprof
                 ctrlSamples.Update(_profile);
                 tabSamples.Header = $"Samples ({_profile.Samples.Count()})";
 
-                Title = $"{AppTitle} - {filename}";
+                _filename = filename;
+                UpdateTitle();
             }
             catch (Exception x)
             {

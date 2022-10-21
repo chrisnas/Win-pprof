@@ -140,6 +140,14 @@ namespace win_pprof
             SetValues(profile);
         }
 
+        private string FixUnderscore(string text)
+        {
+            // In WPF, _ is used to indicate any accelerator - https://learn.microsoft.com/en-gb/archive/blogs/permanenttan/wpf-equivalent-for-winforms-ampersand-to-prefix-accessaccelerator-character
+            // So escape it with another _ to make it visible
+
+            return text.Replace("_", "__");
+        }
+
         private void SetValues(PProfFile profile)
         {
             // each value type is a column
@@ -156,7 +164,7 @@ namespace win_pprof
                 binding.Converter = converter;
                 var header = new GridViewColumnHeader();
                 header.MouseDown += OnValuesMouseDown;
-                header.Content = valueType.Name;
+                header.Content = FixUnderscore(valueType.Name);
                 gridView.Columns.Add(
                     new GridViewColumn
                     {
