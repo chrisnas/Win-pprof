@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:win_pprof"
         mc:Ignorable="d"
         Icon="/Cat.png"
-        Title="Select value types" Height="200" Width="270"
+        Title="Select value types" Height="250" Width="300"
         Loaded="OnLoaded"
+        KeyUp="OnKeyUp"
         >
     <Window.Resources>
         <Style x:Key="CheckBoxListStyle" TargetType="{x:Type ListBox}">

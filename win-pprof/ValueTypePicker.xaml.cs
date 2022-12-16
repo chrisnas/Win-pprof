@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 
 namespace win_pprof
 {
@@ -41,7 +42,6 @@ namespace win_pprof
             if (lbValueTypes.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Select at least 1 column...");
-                //DialogResult = false;
                 return;
             }
 
@@ -61,5 +61,20 @@ namespace win_pprof
             DialogResult = true;
         }
 
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.U)
+                {
+                    lbValueTypes.UnselectAll();
+                }
+                else
+                if (e.Key == Key.S)
+                {
+                    lbValueTypes.SelectAll();
+                }
+            }
+        }
     }
 }

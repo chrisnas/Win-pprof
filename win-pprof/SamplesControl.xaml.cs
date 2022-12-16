@@ -178,13 +178,15 @@ namespace win_pprof
             }
             // TODO: set the unit as tooltip because header could become too large with it
 
-            // fill up the list with ALL samples and compute the value sum for each column
+            // fill up the list with ALL samples and compute the value sum and non 0 count for each column
             // also count unique call stacks
             Dictionary<int, int> uniqueStacks = new Dictionary<int, int>();
             List<long> valuesSum = new List<long>(valuesCount);
+            List<long> nonZeroValuesCount = new List<long>(valuesCount);
             for (int i = 0; i < valuesCount; i++)
             {
                 valuesSum.Add(0);
+                nonZeroValuesCount.Add(0);
             }
 
             var sampleIndex = 0;
@@ -195,6 +197,10 @@ namespace win_pprof
                 for (int i = 0; i < valuesCount; i++)
                 {
                     valuesSum[i] += sample.Values[i];
+                    if (sample.Values[i] != 0)
+                    {
+                        nonZeroValuesCount[i]++;
+                    }
                 }
 
                 var stackKey = sample.Locations.GetHashCodes();
@@ -208,11 +214,11 @@ namespace win_pprof
             // show the number of unique call stacks
             tbStacksCount.Text = $"({uniqueStacks.Count})";
 
-            // show the sum all values per column in the header tooltip
+            // show the sum of all values per column in the header tooltip + count of non 0 values
             for (int i = 0; i < valuesCount; i++)
             {
                 var header = (GridViewColumnHeader)((GridViewColumn)gridView.Columns[i]).Header;
-                header.ToolTip = valuesSum[i];
+                header.ToolTip = $"{nonZeroValuesCount[i]} | {valuesSum[i]}";
             }
         }
 
