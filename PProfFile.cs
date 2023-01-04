@@ -197,7 +197,14 @@ public class PProfFile
             var labels = new List<Label>(sample.Label.Count);
             foreach (var label in sample.Label)
             {
-                labels.Add(new Label(GetString(label.Key), GetString(label.Str)));
+                if (label.Str == 0)
+                {
+                    labels.Add(new Label(GetString(label.Key), label.Num.ToString()));
+                }
+                else
+                {
+                    labels.Add(new Label(GetString(label.Key), GetString(label.Str)));
+                }
             }
 
             var locations = new List<Location>(sample.LocationId.Count);

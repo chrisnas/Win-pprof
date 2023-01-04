@@ -12,7 +12,7 @@ public partial class AboutBox : Window
 
         // show the version in the title
         var name = Assembly.GetExecutingAssembly().GetName();
-        Title = string.Format("{0} - v{1}.{2}", Title, name.Version.Major, name.Version.Minor);
+        Title = string.Format("{0} - v{1}.{2}.{3}", Title, name.Version.Major, name.Version.Minor, name.Version.Build);
     }
 }
 
