@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Google.Protobuf.WellKnownTypes;
 using Perftools.Profiles;
 
 
@@ -15,7 +16,7 @@ public class PProfFile
     public IEnumerable<Location> Locations { get; private set; }
     public IEnumerable<Function> Functions { get; private set; }
     public IEnumerable<string> StringTable { get; private set; }
-
+    public long DurationNS { get; private set; }
 
     // Can be called only once
     public bool Load(Profile profile)
@@ -28,6 +29,9 @@ public class PProfFile
         try
         {
             _profile = profile;
+
+            DurationNS = profile.DurationNanos;
+
             LoadStringTable();
             LoadValueTypes();
             LoadMappings();
@@ -197,13 +201,17 @@ public class PProfFile
             var labels = new List<Label>(sample.Label.Count);
             foreach (var label in sample.Label)
             {
-                if (label.Str == 0)
+                if ((label.Num != 0) || (label.NumUnit != 0))
                 {
                     labels.Add(new Label(GetString(label.Key), label.Num.ToString()));
                 }
-                else
+                else if (label.Str != 0)
                 {
                     labels.Add(new Label(GetString(label.Key), GetString(label.Str)));
+                }
+                else // we don't know if it is an empty string or a 0 numeric value
+                {
+                    labels.Add(new Label(GetString(label.Key), $"'{GetString(label.Str)}' or 0"));
                 }
             }
 
