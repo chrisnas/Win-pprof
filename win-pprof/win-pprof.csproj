@@ -5,7 +5,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>win_pprof</RootNamespace>
     <UseWPF>true</UseWPF>
-    <Version>1.6.3</Version>
+    <Version>1.6.4</Version>
     <Description>.pprof visualizer</Description>
     <ApplicationIcon>Cat.ico</ApplicationIcon>
   </PropertyGroup>

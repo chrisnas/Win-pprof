@@ -133,6 +133,11 @@ namespace win_pprof
             if (!string.IsNullOrEmpty(_filename))
             {
                 titleBuilder.AppendFormat("  -  {0}", _filename);
+                if (_profile != null)
+                {
+                    TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_profile.DurationNS / 1000000));
+                    titleBuilder.AppendFormat($" [{ts.TotalSeconds} s]");
+                }
             }
 
             Title = titleBuilder.ToString();

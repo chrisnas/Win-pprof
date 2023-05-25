@@ -283,6 +283,10 @@ namespace dd_pprof
                 return;
             }
 
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(profile.DurationNanos / 1000000));
+            Console.WriteLine($"Duration: {ts.TotalSeconds} s");
+            Console.WriteLine();
+
             Console.WriteLine($"{wrapper.ValueTypes.Count()} value types");
             Console.WriteLine("-----------------------");
             foreach (var type in wrapper.ValueTypes)
@@ -482,7 +486,8 @@ namespace dd_pprof
 
         private static void ShowHeader()
         {
-            Console.WriteLine("dotnet-pprof v1.0.0 - .pprof analyzer");
+            var name = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+            Console.WriteLine($"dotnet-pprof v{name.Version.Major}.{name.Version.Minor}.{name.Version.Build} - .pprof dumper");
             Console.WriteLine("by Christophe Nasarre");
             Console.WriteLine();
         }
