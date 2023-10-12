@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Google.Protobuf.WellKnownTypes;
+using System.IO;
+using System.Linq;
+using K4os.Compression.LZ4.Streams;
 using Perftools.Profiles;
 
 
@@ -18,8 +20,35 @@ public class PProfFile
     public IEnumerable<string> StringTable { get; private set; }
     public long DurationNS { get; private set; }
 
+    private static readonly byte[] Lz4MagicNumber = BitConverter.GetBytes(0x184D2204);
+
+    private static Stream GetStream(string filename)
+    {
+        var s = File.OpenRead(filename);
+        var buffer = new byte[4];
+        s.Read(buffer.AsSpan());
+        s.Position = 0;
+        if (Lz4MagicNumber.SequenceEqual(buffer))
+        {
+            return LZ4Stream.Decode(s);
+        }
+        else
+        {
+            return s;
+        }
+    }
+
     // Can be called only once
-    public bool Load(Profile profile)
+    public bool Load(string filename)
+    {
+        using var stream = GetStream(filename);
+        var profile = Profile.Parser.ParseFrom(stream);
+
+        return Load(profile);
+    }
+
+    // Can be called only once
+    private bool Load(Profile profile)
     {
         if (_profile != null)
         {
