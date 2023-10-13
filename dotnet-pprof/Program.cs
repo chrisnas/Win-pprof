@@ -126,9 +126,7 @@ namespace dd_pprof
 
             try
             {
-                using var s = File.OpenRead(parameters.filename);
-                var profile = Profile.Parser.ParseFrom(s);
-                DumpPProfEx(profile, parameters.showAll);
+                DumpPProfEx(parameters.filename, parameters.showAll);
             }
             catch (Exception x)
             {
@@ -275,15 +273,15 @@ namespace dd_pprof
             Console.WriteLine();
         }
 
-        static void DumpPProfEx(Profile profile, bool showAll)
+        static void DumpPProfEx(string filename, bool showAll)
         {
-            var wrapper = new PProfFile();
-            if (!wrapper.Load(profile))
+            PProfFile wrapper = new();
+            if (!wrapper.Load(filename))
             {
                 return;
             }
 
-            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(profile.DurationNanos / 1000000));
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(wrapper.DurationNS / 1000000));
             Console.WriteLine($"Duration: {ts.TotalSeconds} s");
             Console.WriteLine();
 

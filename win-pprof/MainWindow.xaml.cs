@@ -162,14 +162,13 @@ namespace win_pprof
             }
         }
 
+
         public void OpenFile(string filename)
         {
             try
             {
-                using var s = File.OpenRead(filename);
-                var profile = Profile.Parser.ParseFrom(s);
                 _profile = new PProfFile();
-                if (!_profile.Load(profile))
+                if (!_profile.Load(filename))
                 {
                     MessageBox.Show($"Error while loading {filename}");
                     return;
