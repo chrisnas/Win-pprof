@@ -168,7 +168,7 @@ public class PProfFile
         _functions = new List<Function>(_profile.Function.Count);
         foreach (var function in _profile.Function)
         {
-            _functions.Add(new Function(function.Id, GetString(function.Name)));
+            _functions.Add(new Function(function.Id, GetString(function.Name), GetString(function.Filename), function.StartLine));
         }
 
         Functions = _functions;
@@ -194,10 +194,13 @@ public class PProfFile
             var frames = new List<Frame>(framesCount);
             for (int i = 0; i < framesCount; i++)
             {
+                var function = GetFunction((int)entry.Line[i].FunctionId);
                 frames.Add(
                     new Frame(
                         entry.Line[i].FunctionId,
-                        GetFunctionName((int)entry.Line[i].FunctionId),
+                        function.Name,
+                        function.Filename,
+                        function.StartLine,
                         i != (framesCount - 1)  // the last frame is not inlined
                         )
                     );
@@ -295,15 +298,19 @@ public class Mapping
 
 public class Frame
 {
-    public Frame(ulong id, string name, bool isInlined)
+    public Frame(ulong id, string name, string filePath, long line, bool isInlined)
     {
         Id = id;
         Name = name;
         IsInlined = isInlined;
+        FilePath = filePath;
+        Line = line;
     }
 
     public ulong Id { get; }
     public string Name { get; }
+    public string FilePath { get; }
+    public long Line { get; }
     public bool IsInlined { get; }
 }
 
@@ -329,14 +336,18 @@ public class Location
 
 public class Function
 {
-    public Function(ulong id, string name)
+    public Function(ulong id, string name, string filename, long startLine)
     {
         Id = id;
         Name = name;
+        Filename = filename;
+        StartLine = startLine;
     }
 
     public ulong Id { get; }
     public string Name { get; }
+    public string Filename { get; }
+    public long StartLine { get; }
 }
 
 
