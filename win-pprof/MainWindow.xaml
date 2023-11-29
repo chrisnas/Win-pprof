@@ -107,6 +107,10 @@
                                                     DisplayMemberBinding="{Binding Path=Name}"
                                                     util:GridViewSort.PropertyName="Name"
                                                     />
+                                    <GridViewColumn Header="Filename" Width="900"
+                                                    DisplayMemberBinding="{Binding Path=Filename}"
+                                                    util:GridViewSort.PropertyName="Filename"
+                                                    />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
@@ -145,6 +149,14 @@
                                     <GridViewColumn Header="Name" Width="1000"
                                                     DisplayMemberBinding="{Binding Path=Name}"
                                                     util:GridViewSort.PropertyName="Name"
+                                                    />
+                                    <GridViewColumn Header="Filename" Width="1000"
+                                                    DisplayMemberBinding="{Binding Path=Filename}"
+                                                    util:GridViewSort.PropertyName="Filename"
+                                                    />
+                                    <GridViewColumn Header="StartLine" Width="50"
+                                                    DisplayMemberBinding="{Binding Path=StartLine}"
+                                                    util:GridViewSort.PropertyName="StartLine"
                                                     />
                                 </GridView.Columns>
                             </GridView>

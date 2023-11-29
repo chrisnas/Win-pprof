@@ -13,6 +13,8 @@ namespace win_pprof
         public ulong Address { get; set; }
         public string Text { get; set; }
         public string IsInlined { get; set; }
+        public string Filename { get; set; }
+        public long StartLine { get; set; }
     }
 
     public partial class SamplesControl : UserControl
@@ -56,7 +58,9 @@ namespace win_pprof
                     {
                         Address = location.Address,
                         IsInlined = (frame.IsInlined) ? "-" : string.Empty,
-                        Text = frame.Name
+                        Text = frame.Name,
+                        Filename = frame.FilePath,
+                        StartLine = frame.Line
                     };
 
                     lvFrames.Items.Add(frameInfo);

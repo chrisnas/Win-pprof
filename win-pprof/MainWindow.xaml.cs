@@ -233,7 +233,5 @@ namespace win_pprof
 
 #region Locations
 #endregion
-
-
     }
 }
