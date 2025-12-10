@@ -179,7 +179,7 @@ public class PProfFile
         _mappings = new List<Mapping>(_profile.Mapping.Count);
         foreach (var mapping in _profile.Mapping)
         {
-            _mappings.Add(new Mapping(mapping.Id, GetString(mapping.Filename), mapping.BuildId));
+            _mappings.Add(new Mapping(mapping.Id, mapping.MemoryStart, mapping.MemoryLimit, GetString(mapping.Filename), mapping.BuildId));
         }
 
         Mappings = _mappings;
@@ -284,14 +284,18 @@ public class ValueType
 
 public class Mapping
 {
-    public Mapping(ulong id, string filename, long buildId)
+    public Mapping(ulong id, ulong address, ulong limit, string filename, long buildId)
     {
         Id = id;
+        AddressStart = address;
+        AddressEnd = limit;
         Filename = filename;
         BuildId = buildId;
     }
 
     public ulong Id { get; }
+    public ulong AddressStart { get; }
+    public ulong AddressEnd { get; }
     public string Filename { get; }
     public long BuildId { get; }
 }

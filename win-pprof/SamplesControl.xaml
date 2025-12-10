@@ -89,8 +89,8 @@
                                             DisplayMemberBinding="{Binding Path=IsInlined}"
                                             />
                             <GridViewColumn Header="Address"
-                                            Width="80"
-                                            DisplayMemberBinding="{Binding Path=Address}"
+                                            Width="120"
+                                            DisplayMemberBinding="{Binding Path=Address, StringFormat=0x{0:X}}"
                                             />
                             <GridViewColumn Header="Frame"
                                             Width="900"

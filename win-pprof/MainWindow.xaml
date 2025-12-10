@@ -36,6 +36,14 @@
                                                 DisplayMemberBinding="{Binding Path=Id}"
                                                     util:GridViewSort.PropertyName="Id"
                                                     />
+                                <GridViewColumn Header="Start" Width="120"
+                                                DisplayMemberBinding="{Binding Path=AddressStart, StringFormat=0x{0:X}}"
+                                                    util:GridViewSort.PropertyName="AddressStart"
+                                                    />
+                                <GridViewColumn Header="End" Width="120"
+                                                DisplayMemberBinding="{Binding Path=AddressEnd, StringFormat=0x{0:X}}"
+                                                    util:GridViewSort.PropertyName="AddressEnd"
+                                                    />
                                 <GridViewColumn Header="Build" Width="50"
                                                 DisplayMemberBinding="{Binding Path=BuildId}"
                                                     util:GridViewSort.PropertyName="BuildId"
@@ -66,8 +74,8 @@
                                                     DisplayMemberBinding="{Binding Path=Id}"
                                                     util:GridViewSort.PropertyName="Id"
                                                     />
-                                    <GridViewColumn Header="Address" Width="90"
-                                                    DisplayMemberBinding="{Binding Path=Address}"
+                                    <GridViewColumn Header="Address" Width="120"
+                                                    DisplayMemberBinding="{Binding Path=Address, StringFormat=0x{0:X}}"
                                                     util:GridViewSort.PropertyName="Address"
                                                     />
                                     <GridViewColumn Header="MappingId" Width="70"
