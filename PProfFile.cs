@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using K4os.Compression.LZ4.Streams;
 using Perftools.Profiles;
-
+using K4os.Compression.LZ4.Streams;
+using ZstdSharp;
 
 public class PProfFile
 {
@@ -21,6 +21,7 @@ public class PProfFile
     public long DurationNS { get; private set; }
 
     private static readonly byte[] Lz4MagicNumber = BitConverter.GetBytes(0x184D2204);
+    private static readonly byte[] ZstdMagicNumber = BitConverter.GetBytes(0xFD2FB528);
 
     private static Stream GetStream(string filename)
     {
@@ -31,6 +32,10 @@ public class PProfFile
         if (Lz4MagicNumber.SequenceEqual(buffer))
         {
             return LZ4Stream.Decode(s);
+        }
+        else if (ZstdMagicNumber.SequenceEqual(buffer))
+        {
+            return new DecompressionStream(s);
         }
         else
         {
@@ -192,6 +197,7 @@ public class PProfFile
         {
             var framesCount = entry.Line.Count;
             var frames = new List<Frame>(framesCount);
+            var sourceFilename = "?";
             for (int i = 0; i < framesCount; i++)
             {
                 var function = GetFunction((int)entry.Line[i].FunctionId);
@@ -205,6 +211,12 @@ public class PProfFile
                         )
                     );
 
+                // rebuild data split between location and function for the start line
+                function.StartLine = entry.Line[i].Line_;
+                if (function.Filename != string.Empty)
+                {
+                    sourceFilename = function.Filename;
+                }
             }
             var filename = "?";
             var mapping = GetMapping(entry.MappingId);
@@ -214,7 +226,7 @@ public class PProfFile
             }
             _locations.Add(
                 new Location(
-                    entry.Id, entry.MappingId, entry.Address, filename, frames
+                    entry.Id, entry.MappingId, entry.Address, filename, sourceFilename, frames
                     )
                 );
         }
@@ -320,12 +332,13 @@ public class Frame
 
 public class Location
 {
-    public Location(ulong id, ulong mappingId, ulong address, string filename, List<Frame> frames)
+    public Location(ulong id, ulong mappingId, ulong address, string filename, string sourceFilename, List<Frame> frames)
     {
         Id = id;
         MappingId = mappingId;
         Address = address;
         Filename = filename;
+        SourceFilename = sourceFilename;
         Frames = frames;
     }
 
@@ -333,6 +346,7 @@ public class Location
     public ulong MappingId { get; }
     public ulong Address { get; }
     public string Filename { get; }
+    public string SourceFilename { get; }
 
     // only the last frame is not inlined
     public IEnumerable<Frame> Frames { get; }
@@ -351,7 +365,7 @@ public class Function
     public ulong Id { get; }
     public string Name { get; }
     public string Filename { get; }
-    public long StartLine { get; }
+    public long StartLine { get; set; }
 }
 
 

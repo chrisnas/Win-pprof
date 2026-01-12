@@ -82,9 +82,13 @@
                                                     DisplayMemberBinding="{Binding Path=MappingId}"
                                                     util:GridViewSort.PropertyName="MappingId"
                                                     />
-                                    <GridViewColumn Header="Filename" Width="800"
+                                    <GridViewColumn Header="Filename" Width="200"
                                                     DisplayMemberBinding="{Binding Path=Filename}"
                                                     util:GridViewSort.PropertyName="Filename"
+                                                    />
+                                    <GridViewColumn Header="Filename" Width="800"
+                                                    DisplayMemberBinding="{Binding Path=SourceFilename}"
+                                                    util:GridViewSort.PropertyName="SourceFilename"
                                                     />
                                 </GridView.Columns>
                             </GridView>
