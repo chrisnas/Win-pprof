@@ -25,6 +25,9 @@
             <TabItem Name="tabSamples" Header="Samples">
                 <local:SamplesControl x:Name="ctrlSamples"/>
             </TabItem>
+            <TabItem Name="tabLifetime" Header="Lifetime">
+                <local:LifetimeControl x:Name="ctrlLifetime"/>
+            </TabItem>
             <TabItem Name="tabMappings" Header="Mappings">
                 <ListView x:Name="lvMappings"
                           util:GridViewSort.AutoSort="True"

@@ -192,6 +192,12 @@ namespace win_pprof
                 ctrlSamples.Update(_profile);
                 tabSamples.Header = $"Samples ({_profile.Samples.Count()})";
 
+                var lifetimeAnalysis = LifetimeAnalysis.Build(_profile);
+                ctrlLifetime.Update(lifetimeAnalysis);
+                tabLifetime.Header = lifetimeAnalysis.HasLifetimeData
+                    ? $"Lifetime ({lifetimeAnalysis.Records.Count})"
+                    : "Lifetime";
+
                 _filename = filename;
                 UpdateTitle();
             }

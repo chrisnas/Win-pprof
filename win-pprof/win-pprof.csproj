@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <!-- net9.0-windows resolves to windows7.0 and pulls net462 LiveCharts WPF (signed LiveChartsCore ref)
+         while net8 LiveChartsCore.dll is unsigned → CS0012. Use Windows 10.0.19041+ to get matching WPF build. -->
+    <TargetFramework>net9.0-windows10.0.19041</TargetFramework>
     <RootNamespace>win_pprof</RootNamespace>
     <UseWPF>true</UseWPF>
     <Version>1.6.4</Version>
@@ -24,6 +26,9 @@
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.21.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.6" />
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-rc6.1" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc6.1" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc6.1" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.7" />
   </ItemGroup>
 
