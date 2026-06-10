@@ -119,9 +119,13 @@
                                                     DisplayMemberBinding="{Binding Path=Name}"
                                                     util:GridViewSort.PropertyName="Name"
                                                     />
+                                    <GridViewColumn Header="Line" Width="50"
+                                                    DisplayMemberBinding="{Binding Path=Line}"
+                                                    util:GridViewSort.PropertyName="Line"
+                                                    />
                                     <GridViewColumn Header="Filename" Width="900"
-                                                    DisplayMemberBinding="{Binding Path=Filename}"
-                                                    util:GridViewSort.PropertyName="Filename"
+                                                    DisplayMemberBinding="{Binding Path=FilePath}"
+                                                    util:GridViewSort.PropertyName="FilePath"
                                                     />
                                 </GridView.Columns>
                             </GridView>
@@ -169,6 +173,45 @@
                                     <GridViewColumn Header="StartLine" Width="50"
                                                     DisplayMemberBinding="{Binding Path=StartLine}"
                                                     util:GridViewSort.PropertyName="StartLine"
+                                                    />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Name="tabStrings" Header="String Table">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0"
+                               LastChildFill="True"
+                               >
+                        <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left">
+                            Filter:
+                        </TextBlock>
+                        <TextBox x:Name="tbFilterStrings"
+                                 Margin="2,0,0,2"
+                                 VerticalContentAlignment="Center"
+                                 TextChanged="OnFilterStringsTextChanged"
+                                 />
+                    </DockPanel>
+                    <ListView x:Name="lvStrings"
+                              Grid.Row="1"
+                              util:GridViewSort.AutoSort="True"
+                              >
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Id" Width="60"
+                                                    DisplayMemberBinding="{Binding Path=Id}"
+                                                    util:GridViewSort.PropertyName="Id"
+                                                    />
+                                    <GridViewColumn Header="Value" Width="1000"
+                                                    DisplayMemberBinding="{Binding Path=Value}"
+                                                    util:GridViewSort.PropertyName="Value"
                                                     />
                                 </GridView.Columns>
                             </GridView>
