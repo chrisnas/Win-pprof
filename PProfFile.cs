@@ -18,6 +18,7 @@ public class PProfFile
     public IEnumerable<Location> Locations { get; private set; }
     public IEnumerable<Function> Functions { get; private set; }
     public IEnumerable<string> StringTable { get; private set; }
+    public IReadOnlyList<StringEntry> StringEntries { get; private set; }
     public long DurationNS { get; private set; }
 
     private static readonly byte[] Lz4MagicNumber = BitConverter.GetBytes(0x184D2204);
@@ -146,15 +147,18 @@ public class PProfFile
     {
         var stringsCount = _profile.StringTable.Count;
         _stringTable = new List<string>(stringsCount);
+        var entries = new List<StringEntry>(stringsCount);
 
         var current = 0;
         foreach (var entry in _profile.StringTable)
         {
             _stringTable.Add(entry);
+            entries.Add(new StringEntry(current, entry));
             current++;
         }
 
         StringTable = _stringTable;
+        StringEntries = entries;
     }
 
     private void LoadValueTypes()
@@ -206,13 +210,11 @@ public class PProfFile
                         entry.Line[i].FunctionId,
                         function.Name,
                         function.Filename,
-                        function.StartLine,
+                        entry.Line[i].Line_,    // per-frame line carried by the location's Line entry
                         i != (framesCount - 1)  // the last frame is not inlined
                         )
                     );
 
-                // rebuild data split between location and function for the start line
-                function.StartLine = entry.Line[i].Line_;
                 if (function.Filename != string.Empty)
                 {
                     sourceFilename = function.Filename;
@@ -281,6 +283,18 @@ public class PProfFile
 }
 
 
+
+public class StringEntry
+{
+    public StringEntry(long id, string value)
+    {
+        Id = id;
+        Value = value;
+    }
+
+    public long Id { get; }
+    public string Value { get; }
+}
 
 public class ValueType
 {
@@ -365,7 +379,7 @@ public class Function
     public ulong Id { get; }
     public string Name { get; }
     public string Filename { get; }
-    public long StartLine { get; set; }
+    public long StartLine { get; }
 }
 
 

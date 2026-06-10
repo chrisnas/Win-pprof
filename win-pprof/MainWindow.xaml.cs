@@ -189,6 +189,11 @@ namespace win_pprof
                 ApplyFunctionFilter();
                 lvFunctions.SelectedIndex = 0;
 
+                tabStrings.Header = $"String Table ({_profile.StringEntries.Count})";
+                lvStrings.ItemsSource = _profile.StringEntries;
+                ApplyStringFilter();
+                lvStrings.SelectedIndex = 0;
+
                 ctrlSamples.Update(_profile);
                 tabSamples.Header = $"Samples ({_profile.Samples.Count()})";
 
@@ -228,6 +233,35 @@ namespace win_pprof
             {
                 var function = (Function)item;
                 return function.Name.Contains(filterString);
+            };
+        }
+
+#region StringTable
+#endregion
+        private void OnFilterStringsTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyStringFilter();
+        }
+
+        private void ApplyStringFilter()
+        {
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(lvStrings.ItemsSource);
+            if (view == null)
+            {
+                return;
+            }
+
+            var filterString = tbFilterStrings.Text;
+            if (string.IsNullOrEmpty(filterString))
+            {
+                view.Filter = null;
+                return;
+            }
+
+            view.Filter = delegate (object item)
+            {
+                var entry = (StringEntry)item;
+                return entry.Value.Contains(filterString);
             };
         }
 
