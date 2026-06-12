@@ -158,6 +158,45 @@ public sealed class LifetimeAnalysis
         return cells;
     }
 
+    /// <summary>
+    /// Builds a dense [type, ageBucket] grid of weights for the isometric 3D bars view.
+    /// Type ordering matches the heatmap (heaviest "old mass" last) so both views line up.
+    /// </summary>
+    public double[,] BuildGrid(
+        bool weightByBytes,
+        out string[] typeNamesOrdered,
+        out string[] bucketLabels,
+        out double maxValue,
+        int minBucket = MinBucketIndex,
+        int maxTypes = 20)
+    {
+        typeNamesOrdered = GetTypesOrderedForHeatmap(weightByBytes, minBucket, maxTypes);
+        bucketLabels = GetBucketAxisLabels(minBucket);
+
+        var typeIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (var i = 0; i < typeNamesOrdered.Length; i++)
+            typeIndex[typeNamesOrdered[i]] = i;
+
+        var nTypes = typeNamesOrdered.Length;
+        var nBuckets = MaxBucketIndex - minBucket + 1;
+        var grid = new double[nTypes, nBuckets];
+        maxValue = 0;
+
+        foreach (var r in Records)
+        {
+            if (!typeIndex.TryGetValue(r.Type, out var ty))
+                continue;
+            var bx = BucketIndex(r.AgeNs) - minBucket;
+            if (bx < 0 || bx >= nBuckets)
+                continue;
+            grid[ty, bx] += Weight(r, weightByBytes);
+            if (grid[ty, bx] > maxValue)
+                maxValue = grid[ty, bx];
+        }
+
+        return grid;
+    }
+
     public static string[] GetBucketAxisLabels(int minBucket = MinBucketIndex)
     {
         var labels = new string[MaxBucketIndex - minBucket + 1];

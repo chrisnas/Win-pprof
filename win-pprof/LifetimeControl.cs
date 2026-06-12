@@ -28,6 +28,7 @@ public sealed class LifetimeControl : UserControl
 
     private bool _suspendUi;
     private LifetimeAnalysis? _analysis;
+    private readonly IsometricLifetimeView _isometric = new();
 
     public LifetimeControl()
     {
@@ -108,6 +109,7 @@ public sealed class LifetimeControl : UserControl
         _cbVisualization.Items.Add("Heatmap");
         _cbVisualization.Items.Add("Bubble (p95 age vs mass)");
         _cbVisualization.Items.Add("CDF (age distribution)");
+        _cbVisualization.Items.Add("Isometric (3D bars)");
         _cbVisualization.SelectedIndex = 0;
 
         _cbWeight.Items.Clear();
@@ -168,6 +170,12 @@ public sealed class LifetimeControl : UserControl
         _tbEmpty.Visibility = Visibility.Collapsed;
         _chartHost.Visibility = Visibility.Visible;
 
+        if (_cbVisualization.SelectedIndex == 3)
+        {
+            RenderIsometric();
+            return;
+        }
+
         var chart = new CartesianChart();
         switch (_cbVisualization.SelectedIndex)
         {
@@ -183,6 +191,16 @@ public sealed class LifetimeControl : UserControl
         }
 
         _chartHost.Child = chart;
+    }
+
+    private void RenderIsometric()
+    {
+        const int MinBucket = 9; // 10^9 ns = 1 second — focus on the 1s+ tail where leaks live
+
+        var grid = _analysis!.BuildGrid(WeightByBytes, out var typeNames, out var bucketLabels, out var maxValue, MinBucket);
+        _isometric.SetData(grid, typeNames, bucketLabels, maxValue, WeightByBytes);
+        if (!ReferenceEquals(_chartHost.Child, _isometric))
+            _chartHost.Child = _isometric;
     }
 
     private void RenderHeatmap(CartesianChart chart)
@@ -345,7 +363,7 @@ public sealed class LifetimeControl : UserControl
         ];
     }
 
-    private static string TruncateLabel(string s, int maxLen)
+    internal static string TruncateLabel(string s, int maxLen)
     {
         if (string.IsNullOrEmpty(s) || s.Length <= maxLen)
             return s;
@@ -354,6 +372,7 @@ public sealed class LifetimeControl : UserControl
         if (collapsed.Length <= maxLen)
             return collapsed;
 
+        // Find the last top-level dot: everything after it is the type name, before it the namespace.
         int depth = 0, lastDot = -1;
         for (int i = 0; i < collapsed.Length; i++)
         {
@@ -362,17 +381,34 @@ public sealed class LifetimeControl : UserControl
             else if (collapsed[i] == '.' && depth == 0) lastDot = i;
         }
 
-        if (lastDot > 0)
+        // No namespace to preserve — just keep the head of the type name.
+        if (lastDot <= 0)
+            return collapsed[..(maxLen - 1)] + "…";
+
+        var typeName = collapsed[(lastDot + 1)..];
+
+        // The type name is the key identifier, so it always wins. If even it overflows, trim its tail.
+        if (typeName.Length >= maxLen)
+            return typeName[..(maxLen - 1)] + "…";
+
+        // Prepend whole namespace segments, nearest (most specific) first, while they fit.
+        // A leading "…" marks where the outer namespace was clipped, e.g. "…Concurrent.Dictionary<…>".
+        var nsSegments = collapsed[..lastDot].Split('.');
+        var result = typeName;
+        var clipped = false;
+        for (int i = nsSegments.Length - 1; i >= 0; i--)
         {
-            var typeName = collapsed[(lastDot + 1)..];
-            if (typeName.Length < maxLen - 2)
+            // +1 for the joining dot, +1 reserved for a possible leading ellipsis.
+            if (result.Length + 1 + nsSegments[i].Length + 1 <= maxLen)
+                result = nsSegments[i] + "." + result;
+            else
             {
-                var budget = maxLen - 1 - typeName.Length;
-                return collapsed[..budget] + "…" + typeName;
+                clipped = true;
+                break;
             }
         }
 
-        return collapsed[..(maxLen - 1)] + "…";
+        return clipped ? "…" + result : result;
     }
 
     private static string CollapseGenerics(string s)
